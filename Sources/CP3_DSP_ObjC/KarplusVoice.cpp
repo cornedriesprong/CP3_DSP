@@ -75,7 +75,7 @@ double KarplusVoice::process() {
         int index = (mBufferPos + i) % mPeriod;
         sum += mBuffer[index];
     }
-    mBuffer[mBufferPos] = sum / (double)mWindowLength;
+    mBuffer[mBufferPos] = sum / mWindowLength;
     
     return mBuffer[mBufferPos];
 }
