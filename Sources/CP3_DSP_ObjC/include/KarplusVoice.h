@@ -12,12 +12,12 @@
 class KarplusVoice {
 public:
     KarplusVoice();
-    void pluck(double freq, double sampleRate);
-    double process(double damping);
+    void pluck(double freq, double sampleRate, double damping, double tone, double excitation);
+    double process();
     
 private:
     int mPeriod = 0;
-    double mPitchTracking = 0;
+    int mWindowLength = 0;
     int mBufferPos = 0;
     double *mBuffer;
     
