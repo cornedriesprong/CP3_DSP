@@ -1,0 +1,4 @@
+module CPPWrapper {
+    umbrella header "CP3_DSP_ObjC.h"
+    export *
+}

@@ -9,7 +9,7 @@ let package = Package(
         // Products define the executables and libraries a package produces, and make them visible to other packages.
         .library(
             name: "CP3_DSP",
-            targets: ["CP3_DSP"]),
+            targets: ["CP3_DSP", "CP3_DSP_ObjC"]),
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
@@ -20,9 +20,19 @@ let package = Package(
         // Targets can depend on other targets in this package, and on products in packages this package depends on.
         .target(
             name: "CP3_DSP",
-            dependencies: []),
+            dependencies: ["CP3_DSP_ObjC"]),
+        .target(
+            name: "CP3_DSP_ObjC",
+            dependencies: [],
+            path: "Sources/CP3_DSP_ObjC"),
         .testTarget(
             name: "CP3_DSPTests",
-            dependencies: ["CP3_DSP"]),
-    ]
+            dependencies: ["CP3_DSP"],
+            path: "Tests/CP3_DSPTests"),
+        .testTarget(
+            name: "CP3_DSPTests_ObjC",
+            dependencies: ["CP3_DSP_ObjC"],
+            path: "Tests/CP3_DSPTests_ObjC"),
+    ],
+    cxxLanguageStandard: .cxx14
 )
