@@ -31,6 +31,9 @@
     double excitation = 0.2;
     karplusVoice->pluck(frequency, sampleRate, damping, tone, excitation);
     NSLog(@"testing Karplus voice with frequency %f and sample rate %f", frequency, sampleRate);
+    
+    // signal should be active
+    XCTAssert(karplusVoice->mIsActive == true);
    
     unsigned long seconds = 20;
     unsigned long totalSamples = (long)sampleRate * seconds;
@@ -59,6 +62,8 @@
         }
         
         if (equal) {
+            // signal should be inactive
+            XCTAssert(karplusVoice->mIsActive == false);
             NSLog(@"signal quiet at sample %d (%f seconds)\n", i, (double)i / sampleRate);
             break;
         }
