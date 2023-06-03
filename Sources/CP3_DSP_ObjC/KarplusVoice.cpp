@@ -26,6 +26,13 @@ void KarplusVoice::pluck(double freq,
                          double damping,
                          double tone,
                          double excitation) {
+    
+    assert(freq >= 0 && freq <= 441000);
+    assert(sampleRate >= 8000 && sampleRate <= 192000);
+    assert(damping >= 0.0 && damping <= 1.0);
+    assert(tone >= 0.0 && tone <= 1.0);
+    assert(excitation >= 0.0 && excitation <= 1.0);
+    
     // convert frequency to period in samples
     mPeriod = calculatePeriodInSamples(freq, sampleRate);
     // pitch tracking: higher pitches should ring out longer
