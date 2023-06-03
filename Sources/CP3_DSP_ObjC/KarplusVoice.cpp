@@ -47,7 +47,6 @@ void KarplusVoice::pluck(double freq,
     mBufferPos = 0;
     
     // mix triangle and noise
-    double mix = tone / 2.;
     double pluckLength = mPeriod * excitation;
     // fill noise buffer with -1.0 and 1.0 values
     for (int i = 0; i < mPeriod; i++) {
@@ -58,10 +57,10 @@ void KarplusVoice::pluck(double freq,
         }
         // generate and mix triangle wave
         double triangle = generateTriangleWave(i);
-        mBuffer[i] += triangle * mix;
+        mBuffer[i] += triangle * tone;
        
         // mix noise
-        mBuffer[i] += ((rand() % 2 == 0) ? -1.0 : 1.0) * (1.0 - mix);
+        mBuffer[i] += ((rand() % 2 == 0) ? -1.0 : 1.0) * (1.0 - tone);
     }
 }
 
