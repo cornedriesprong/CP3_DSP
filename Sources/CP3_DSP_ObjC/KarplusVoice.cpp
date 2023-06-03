@@ -10,8 +10,8 @@
 #include <random>
 
 // this is the number of samples we need to represent a full period
-// of the lowest possible MIDI pitch, i.e., C-1 at 48000 Kz = 5871.3 samples
-#define MAX_BUFFER_SIZE (5872)
+// of the lowest possible MIDI frequency
+#define MAX_BUFFER_SIZE (8192)
 
 KarplusVoice::KarplusVoice() {
     // allocate noise buffer
@@ -26,7 +26,8 @@ void KarplusVoice::pluck(double freq,
                          double damping,
                          double tone,
                          double excitation) {
-    
+   
+    // check parameters
     assert(freq >= 0 && freq <= 441000);
     assert(sampleRate >= 8000 && sampleRate <= 192000);
     assert(damping >= 0.0 && damping <= 1.0);
@@ -35,14 +36,17 @@ void KarplusVoice::pluck(double freq,
     
     // convert frequency to period in samples
     mPeriod = calculatePeriodInSamples(freq, sampleRate);
+    assert(mPeriod <= MAX_BUFFER_SIZE);
+    
     // pitch tracking: higher pitches should ring out longer
     double pitchTracking = fmax(5.0, (double)mPeriod / 7.);
+    
     // determine window length, bigger window = more smoothing
     double scaledDamping = pow((damping * 0.75) + 0.25, 2);
     mWindowLength = std::max(2, (int)round(scaledDamping * pitchTracking));
     mBufferPos = 0;
     
-    // mix triangle vs noise
+    // mix triangle and noise
     double mix = tone / 2.;
     double pluckLength = mPeriod * excitation;
     // fill noise buffer with -1.0 and 1.0 values
@@ -53,15 +57,7 @@ void KarplusVoice::pluck(double freq,
             continue;
         }
         // generate and mix triangle wave
-        double phase = (double)i / mPeriod;
-        double triangle = 0;
-        if (phase < 0.25) {
-            triangle = 4 * phase;
-        } else if (phase < 0.75) {
-            triangle = 2 - 4 * phase;
-        } else {
-            triangle = -4 + 4 * phase;
-        }
+        double triangle = generateTriangleWave(i);
         mBuffer[i] += triangle * mix;
        
         // mix noise
@@ -92,6 +88,21 @@ int mWindowLength = 0;
 int mBufferPos = 0;
 double *mBuffer;
 
-int calculatePeriodInSamples(double frequency, double sampleRate) {
+// generate a triangle wave of the frequency given by mPeriod
+double KarplusVoice::generateTriangleWave(int sample) {
+    double phase = (double)sample / mPeriod;
+    double triangle = 0;
+    if (phase < 0.25) {
+        triangle = 4 * phase;
+    } else if (phase < 0.75) {
+        triangle = 2 - 4 * phase;
+    } else {
+        triangle = -4 + 4 * phase;
+    }
+    return triangle;
+}
+
+// convert frequency to period
+int KarplusVoice::calculatePeriodInSamples(double frequency, double sampleRate) {
     return static_cast<int>(sampleRate / frequency);
 }

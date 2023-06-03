@@ -21,9 +21,8 @@ private:
     int mBufferPos = 0;
     double *mBuffer;
     
-    int calculatePeriodInSamples(double frequency, double sampleRate) {
-        return static_cast<int>(sampleRate / frequency);
-    }
+    int calculatePeriodInSamples(double frequency, double sampleRate);
+    double generateTriangleWave(int sample);
 };
 
 #endif
