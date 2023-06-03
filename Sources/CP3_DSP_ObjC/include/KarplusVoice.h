@@ -14,7 +14,6 @@ public:
     KarplusVoice();
     void pluck(double freq, double sampleRate, double damping, double tone, double excitation);
     double process();
-    bool mIsActive = false;
     
 private:
     int mPeriod = 0;

@@ -34,8 +34,6 @@ void KarplusVoice::pluck(double freq,
     assert(tone >= 0.0 && tone <= 1.0);
     assert(excitation >= 0.0 && excitation <= 1.0);
     
-    mIsActive = true;
-    
     // convert frequency to period in samples
     mPeriod = calculatePeriodInSamples(freq, sampleRate);
     assert(mPeriod <= MAX_BUFFER_SIZE);
@@ -68,7 +66,7 @@ void KarplusVoice::pluck(double freq,
 
 double KarplusVoice::process() {
     // if buffer is empty, do nothing
-    if (!mIsActive || mPeriod == 0) return 0.0;
+    if (mPeriod == 0) return 0.0;
     
     // loop around noise buffer
     mBufferPos = (mBufferPos + 1) % mPeriod;
@@ -78,25 +76,12 @@ double KarplusVoice::process() {
     for (int i = 0; i < mWindowLength; i++) {
         int index = (mBufferPos + i) % mPeriod;
         sum += mBuffer[index];
-        
-        // if 10 subsequent samples are the same,
-        // we assume the signal has gone quiet
-        bool equal = true;
-        for (int j = i + 1; j < i + 10; ++j) {
-            if (mBuffer[j] != mBuffer[i]) {
-                equal = false;
-            }
-        }
-        // signal has gone quiet, set voice inactive
-        if (equal)
-            mIsActive = false;
     }
     mBuffer[mBufferPos] = sum / mWindowLength;
     
     return mBuffer[mBufferPos];
 }
 
-bool mIsActive = false;
 int mPeriod = 0;
 int mWindowLength = 0;
 int mBufferPos = 0;
